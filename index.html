@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mosaic Laboratory</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'JetBrains Mono', monospace;
+            background: #f5f5dc;
+            min-height: 100vh;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(200, 180, 150, 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(200, 180, 150, 0.3) 1px, transparent 1px);
+            background-size: 20px 20px;
+            z-index: -1;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #FFDAB9;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 64px;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            text-shadow: 
+                4px 0 0 #FFB07A,
+                -4px 0 0 #FFB07A,
+                0 4px 0 #FFB07A,
+                0 -4px 0 #FFB07A,
+                4px 4px 0 #FFA07A,
+                -4px -4px 0 #FFA07A,
+                4px -4px 0 #FFA07A,
+                -4px 4px 0 #FFA07A;
+        }
+        
+        .main-layout {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        
+        .canvas-container {
+            flex-shrink: 0;
+            margin: 0;
+            padding: 0;
+            line-height: 0;
+        }
+        
+        canvas {
+            border: 2px solid #a0937d;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            display: block;
+            margin: 0;
+            padding: 0;
+            vertical-align: top;
+            line-height: 0;
+        }
+        
+        .controls {
+            flex: 1;
+            min-width: 400px;
+        }
+        .control-category {
+            background: #d4c8a8;
+            border: 2px solid #a0937d;
+            padding: 15px;
+            margin: 0px 0 10px 0;
+        }
+        
+        .control-category h3 {
+            margin: 0 0 15px 0;
+            color: #CC6040;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-family: 'Press Start 2P', monospace;
+            border-bottom: 2px solid #666;
+            padding-bottom: 5px;
+        }
+        
+        .control-group {
+            display: inline-block;
+            margin: 8px 10px 8px 0;
+            vertical-align: top;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 500;
+            font-size: 10px;
+            color: #5c5043;
+            text-transform: uppercase;
+        }
+        
+        /* Pixelated slider styles */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 80px;
+            height: 8px;
+            background: #666;
+            outline: none;
+            margin: 6px 0;
+            border: 1px solid #999;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #4ecdc4;
+            cursor: pointer;
+            border: 2px solid #fff;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: #45b7d1;
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #4ecdc4;
+            cursor: pointer;
+            border: 2px solid #fff;
+            border-radius: 0;
+        }
+        
+        input[type="color"] {
+            width: 40px;
+            height: 32px;
+            padding: 0;
+            margin: 4px 0;
+            border: 2px solid #999;
+            cursor: pointer;
+        }
+        
+        input[type="color"]:hover {
+            border-color: #4ecdc4;
+        }
+        
+        select {
+            padding: 6px 8px;
+            margin: 4px 0;
+            border: 2px solid #a0937d;
+            font-size: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            background: #f5f5dc;
+            color: #5c5043;
+            cursor: pointer;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #4ecdc4;
+        }
+        
+        button {
+            background: #4ecdc4;
+            color: #1a1a1a;
+            cursor: pointer;
+            border: 2px solid #45b7d1;
+            padding: 8px 16px;
+            font-size: 10px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            margin: 4px 2px;
+            text-transform: uppercase;
+        }
+        
+        button:hover {
+            background: #45b7d1;
+            border-color: #4ecdc4;
+        }
+        
+        button:active {
+            background: #3a9bc1;
+        }
+        
+        #randomiseBtn {
+            animation: colorCycle 20s infinite;
+        }
+        
+        @keyframes colorCycle {
+            0% { background: #4ecdc4; border-color: #45b7d1; }
+            25% { background: #ff6b6b; border-color: #e55555; }
+            50% { background: #ffd93d; border-color: #e6c236; }
+            75% { background: #6bcf7f; border-color: #5bb26f; }
+            100% { background: #4ecdc4; border-color: #45b7d1; }
+        }
+        
+        span {
+            font-size: 9px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 500;
+            color: #000;
+            background: #c4b999;
+            padding: 2px 4px;
+            border: 1px solid #a0937d;
+            margin-left: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Mosaic Laboratory</h1>
+        
+        <div class="main-layout">
+            <div class="canvas-container">
+                <canvas id="canvas" width="600" height="600"></canvas>
+                <div style="text-align: center; margin-top: 30px; font-family: 'Press Start 2P', monospace; font-size: 10px; color: #FFA07A;">
+                    MADE BY KENCHT
+                </div>
+            </div>
+            
+            <div class="controls">
+            <div class="control-category">
+                <h3>Propagation</h3>
+                <div class="control-group">
+                    <label>Pattern Complexity:</label>
+                    <input type="range" id="complexity" min="1" max="10" value="5">
+                    <span id="complexityValue">5</span>
+                </div>
+                
+                <div class="control-group">
+                    <label>Ring Spacing:</label>
+                    <input type="range" id="ringSpacing" min="20" max="120" value="60">
+                    <span id="ringSpacingValue">60</span>
+                </div>
+                
+                <div class="control-group">
+                    <label>Ring Width:</label>
+                    <input type="range" id="ringWidth" min="10" max="100" value="50">
+                    <span id="ringWidthValue">50</span>
+                </div>
+            </div>
+            
+            <div class="control-category">
+                <h3>Stretch Distortion</h3>
+                <div class="control-group">
+                    <label>Horizontal Stretch:</label>
+                    <input type="range" id="stretchX" min="100" max="400" value="100">
+                    <span id="stretchXValue">100</span>
+                </div>
+                
+                <div class="control-group">
+                    <label>Vertical Stretch:</label>
+                    <input type="range" id="stretchY" min="100" max="400" value="100">
+                    <span id="stretchYValue">100</span>
+                </div>
+            </div>
+            
+            <div class="control-category">
+                <h3>Wave Distortion</h3>
+                <div class="control-group">
+                    <label>Sine Wave Amplitude:</label>
+                    <input type="range" id="sineAmplitude" min="0" max="20" value="0">
+                    <span id="sineAmplitudeValue">0</span>
+                </div>
+                
+                <div class="control-group">
+                    <label>Sine Wave Length:</label>
+                    <input type="range" id="sineWaveLength" min="20" max="200" value="80">
+                    <span id="sineWaveLengthValue">80</span>
+                </div>
+                
+                <div class="control-group">
+                    <label>Tile Shift Amplitude:</label>
+                    <input type="range" id="tileShiftAmplitude" min="0" max="5" value="0">
+                    <span id="tileShiftAmplitudeValue">0</span>
+                </div>
+                
+                <div class="control-group">
+                    <label>Tile Shift Frequency:</label>
+                    <input type="range" id="tileShiftFrequency" min="20" max="200" value="80">
+                    <span id="tileShiftFrequencyValue">80</span>
+                </div>
+            </div>
+            <div class="control-category">
+                <h3>Color</h3>
+                <div class="control-group">
+                    <label>Color Mode:</label>
+                    <select id="colorMode">
+                        <option value="2">2 Colors</option>
+                        <option value="3" selected>3 Colors</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label>Preset Palettes:</label>
+                    <select id="colorPresets">
+                        <option value="">Custom</option>
+                        <optgroup label="Bright Palettes">
+                            <option value="neon">Electric Neon</option>
+                            <option value="tropical">Tropical Burst</option>
+                            <option value="sunset">Vibrant Sunset</option>
+                            <option value="acidic">Acid Pop</option>
+                            <option value="galaxy">Cosmic Bright</option>
+                        </optgroup>
+                        <optgroup label="Muted Palettes">
+                            <option value="forest">Forest Mist</option>
+                            <option value="sage">Sage Garden</option>
+                            <option value="dusty">Dusty Rose</option>
+                            <option value="autumn">Muted Autumn</option>
+                            <option value="ocean">Ocean Depths</option>
+                        </optgroup>
+                        <optgroup label="Beige & Pastel">
+                            <option value="cream">Cream Dream</option>
+                            <option value="lavender">Lavender Fields</option>
+                            <option value="peach">Peach Sorbet</option>
+                            <option value="mint">Mint Tea</option>
+                            <option value="sand">Desert Sand</option>
+                        </optgroup>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label>Color 1:</label>
+                    <input type="color" id="color1" value="#FF6B6B">
+                </div>
+                
+                <div class="control-group">
+                    <label>Color 2:</label>
+                    <input type="color" id="color2" value="#4ECDC4">
+                </div>
+                
+                <div class="control-group" id="color3Group">
+                    <label>Color 3:</label>
+                    <input type="color" id="color3" value="#45B7D1">
+                </div>
+            </div>
+            
+            <div class="control-category">
+                <h3>Canvas & Output</h3>
+                <div style="display: flex; gap: 5px;">
+                    <div style="flex: 1;">
+                        <div class="control-group">
+                            <label>Canvas Width:</label>
+                            <input type="range" id="canvasWidth" min="200" max="1200" step="50" value="600">
+                            <span id="canvasWidthValue">600</span>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label>Canvas Height:</label>
+                            <input type="range" id="canvasHeight" min="200" max="1200" step="50" value="600">
+                            <span id="canvasHeightValue">600</span>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label>Mosaic Tile Size:</label>
+                            <input type="range" id="tileSize" min="4" max="64" value="8">
+                            <span id="tileSizeValue">8</span>
+                        </div>
+                        
+                        <div class="control-group">
+                            <button id="exportBtn">CAPTURE</button>
+                            <button id="randomiseBtn">MUTATE</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    <script src="mosaic.js"></script>
+</body>
+</html>
