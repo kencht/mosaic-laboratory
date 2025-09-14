@@ -483,7 +483,7 @@ class MosaicGenerator {
 
         // Animate multiple tiles per frame for much faster animation
         let currentTile = 0;
-        const tilesPerFrame = Math.max(1, Math.floor(tiles.length / 60)); // Complete in ~60 frames
+        const tilesPerFrame = Math.max(1, Math.floor(tiles.length / 5)); // Complete in ~5 frames
         
         const animateTile = () => {
             if (currentTile >= tiles.length) return;
@@ -546,7 +546,7 @@ class MosaicGenerator {
 
         // Animate multiple tiles per frame
         let currentTile = 0;
-        const tilesPerFrame = Math.max(1, Math.floor(tiles.length / 60));
+        const tilesPerFrame = Math.max(1, Math.floor(tiles.length / 5)); // Complete in ~5 frames
         
         const animateTile = () => {
             if (currentTile >= tiles.length) return;
