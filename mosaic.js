@@ -97,6 +97,33 @@ class MosaicGenerator {
             this.export();
         });
 
+        document.getElementById('loadHashBtn').addEventListener('click', () => {
+            const hash = document.getElementById('hashInput').value.trim();
+            if (hash) {
+                if (this.loadFromHash(hash)) {
+                    alert('Settings loaded successfully!');
+                } else {
+                    alert('Invalid hash. Please check and try again.');
+                }
+            }
+        });
+
+        document.getElementById('copyHashBtn').addEventListener('click', () => {
+            const hash = this.generateHash();
+            navigator.clipboard.writeText(hash).then(() => {
+                alert('Hash copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = hash;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('Hash copied to clipboard!');
+            });
+        });
+
     }
 
     updateCanvasSize() {
@@ -654,26 +681,89 @@ class MosaicGenerator {
         document.getElementById('tileShiftFrequency').value = Math.floor(Math.random() * 181) + 20;
         document.getElementById('tileShiftFrequencyValue').textContent = document.getElementById('tileShiftFrequency').value;
         
-        // Randomise colors
-        const randomColor = () => {
-            return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
-        };
-        
-        document.getElementById('color1').value = randomColor();
-        document.getElementById('color2').value = randomColor();
-        document.getElementById('color3').value = randomColor();
-        
-        // Randomly choose 2 or 3 colors
-        const colorMode = Math.random() > 0.5 ? '3' : '2';
-        document.getElementById('colorMode').value = colorMode;
-        const color3Group = document.getElementById('color3Group');
-        color3Group.style.display = colorMode === '3' ? 'inline-block' : 'none';
-        
-        // Reset preset to custom
-        document.getElementById('colorPresets').value = '';
+        // Randomise colors only if not locked
+        if (!document.getElementById('lockColors').checked) {
+            const randomColor = () => {
+                return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+            };
+            
+            document.getElementById('color1').value = randomColor();
+            document.getElementById('color2').value = randomColor();
+            document.getElementById('color3').value = randomColor();
+            
+            // Randomly choose 2 or 3 colors
+            const colorMode = Math.random() > 0.5 ? '3' : '2';
+            document.getElementById('colorMode').value = colorMode;
+            const color3Group = document.getElementById('color3Group');
+            color3Group.style.display = colorMode === '3' ? 'inline-block' : 'none';
+            
+            // Reset preset to custom
+            document.getElementById('colorPresets').value = '';
+        }
         
         // Generate new mosaic with randomised values  
         this.generateWithAnimation();
+    }
+
+    generateHash() {
+        const settings = {
+            complexity: document.getElementById('complexity').value,
+            ringSpacing: document.getElementById('ringSpacing').value,
+            ringWidth: document.getElementById('ringWidth').value,
+            stretchX: document.getElementById('stretchX').value,
+            stretchY: document.getElementById('stretchY').value,
+            sineAmplitude: document.getElementById('sineAmplitude').value,
+            sineWaveLength: document.getElementById('sineWaveLength').value,
+            tileShiftAmplitude: document.getElementById('tileShiftAmplitude').value,
+            tileShiftFrequency: document.getElementById('tileShiftFrequency').value,
+            tilesAcross: document.getElementById('tilesAcross').value,
+            tilesDown: document.getElementById('tilesDown').value,
+            tileSize: document.getElementById('tileSize').value,
+            groutWidth: document.getElementById('groutWidth').value,
+            groutColor: document.getElementById('groutColor').value,
+            colorMode: document.getElementById('colorMode').value,
+            color1: document.getElementById('color1').value,
+            color2: document.getElementById('color2').value,
+            color3: document.getElementById('color3').value,
+            colorPresets: document.getElementById('colorPresets').value
+        };
+        
+        return btoa(JSON.stringify(settings));
+    }
+
+    loadFromHash(hash) {
+        try {
+            const settings = JSON.parse(atob(hash));
+            
+            Object.keys(settings).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.value = settings[key];
+                    // Update the display value spans
+                    const valueSpan = document.getElementById(key + 'Value');
+                    if (valueSpan) {
+                        if (key === 'groutWidth') {
+                            valueSpan.textContent = parseFloat(settings[key]).toFixed(1);
+                        } else {
+                            valueSpan.textContent = settings[key];
+                        }
+                    }
+                }
+            });
+            
+            // Handle color mode visibility
+            const colorMode = settings.colorMode || '3';
+            const color3Group = document.getElementById('color3Group');
+            color3Group.style.display = colorMode === '3' ? 'inline-block' : 'none';
+            
+            // Update canvas size and regenerate
+            this.updateCanvasSize();
+            
+            return true;
+        } catch (e) {
+            console.error('Invalid hash:', e);
+            return false;
+        }
     }
 
     export() {
@@ -687,26 +777,15 @@ class MosaicGenerator {
         // Disable image smoothing for crisp pixel art
         exportCtx.imageSmoothingEnabled = false;
         
-        // Scale the context to draw at higher resolution
-        exportCtx.scale(scale, scale);
+        // Simply scale up the current canvas content
+        exportCtx.drawImage(this.canvas, 0, 0, exportCanvas.width, exportCanvas.height);
         
-        // Redraw the mosaic at high resolution
-        const originalCtx = this.ctx;
-        this.ctx = exportCtx;
+        // Generate hash for filename
+        const hash = this.generateHash();
         
-        // Clear and fill background
-        this.ctx.fillStyle = '#FFFFFF';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        // Regenerate the mosaic pattern at high resolution
-        this.applyMosaicEffect();
-        
-        // Restore original context
-        this.ctx = originalCtx;
-        
-        // Create download link with high-quality PNG
+        // Create download link with hash in filename
         const link = document.createElement('a');
-        link.download = 'mosaic-hq.png';
+        link.download = `mosaic-${hash.substring(0, 12)}.png`;
         link.href = exportCanvas.toDataURL('image/png');
         link.click();
     }

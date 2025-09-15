@@ -395,6 +395,11 @@
                     <label>Color 3:</label>
                     <input type="color" id="color3" value="#45B7D1">
                 </div>
+                
+                <div class="control-group">
+                    <label>Lock Colours:</label>
+                    <input type="checkbox" id="lockColors" style="margin: 4px 0;">
+                </div>
             </div>
             
             <div class="control-category">
@@ -442,6 +447,16 @@
                             <button id="randomiseBtn">MUTATE</button>
                         </div>
                     </div>
+                </div>
+            </div>
+            
+            <div class="control-category">
+                <h3>Save/Load Settings</h3>
+                <div class="control-group">
+                    <label>Enter Hash:</label>
+                    <input type="text" id="hashInput" placeholder="Paste hash here..." style="width: 200px; padding: 6px; margin: 4px 0; border: 2px solid #a0937d; font-family: 'JetBrains Mono', monospace; font-size: 9px;">
+                    <button id="loadHashBtn" style="margin-left: 8px;">LOAD</button>
+                    <button id="copyHashBtn">COPY HASH</button>
                 </div>
             </div>
         </div>
