@@ -131,16 +131,40 @@ class MosaicGenerator {
         const tilesDown = parseInt(document.getElementById('tilesDown').value);
         const tileSize = parseInt(document.getElementById('tileSize').value);
         
-        // Canvas dimensions are already multiples of tile size
-        const adjustedWidth = tilesAcross * tileSize;
-        const adjustedHeight = tilesDown * tileSize;
+        // Calculate the ideal canvas dimensions
+        const idealWidth = tilesAcross * tileSize;
+        const idealHeight = tilesDown * tileSize;
         
-        this.canvas.width = adjustedWidth;
-        this.canvas.height = adjustedHeight;
+        // Set maximum display size to prevent canvas from getting too large
+        const maxDisplaySize = 800;
+        let displayWidth = idealWidth;
+        let displayHeight = idealHeight;
+        
+        // Scale down if canvas would be too large
+        if (idealWidth > maxDisplaySize || idealHeight > maxDisplaySize) {
+            const scale = Math.min(maxDisplaySize / idealWidth, maxDisplaySize / idealHeight);
+            displayWidth = Math.floor(idealWidth * scale);
+            displayHeight = Math.floor(idealHeight * scale);
+            
+            // Ensure dimensions are still multiples of scaled tile size for clean scaling
+            const scaledTileSize = Math.floor(tileSize * scale);
+            if (scaledTileSize > 0) {
+                displayWidth = Math.floor(displayWidth / scaledTileSize) * scaledTileSize;
+                displayHeight = Math.floor(displayHeight / scaledTileSize) * scaledTileSize;
+            }
+        }
+        
+        // Set canvas actual size (for rendering calculations)
+        this.canvas.width = idealWidth;
+        this.canvas.height = idealHeight;
+        
+        // Set canvas display size via CSS
+        this.canvas.style.width = displayWidth + 'px';
+        this.canvas.style.height = displayHeight + 'px';
         
         // Clear to white background
         this.ctx.fillStyle = '#FFFFFF';
-        this.ctx.fillRect(0, 0, adjustedWidth, adjustedHeight);
+        this.ctx.fillRect(0, 0, idealWidth, idealHeight);
         
         // Generate new pattern in temp canvas and animate over blank canvas
         this.generateWithAnimation();
