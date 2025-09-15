@@ -34,8 +34,8 @@ class MosaicGenerator {
         updateValue('sineWaveLength', 'sineWaveLengthValue');
         updateValue('tileShiftAmplitude', 'tileShiftAmplitudeValue');
         updateValue('tileShiftFrequency', 'tileShiftFrequencyValue');
-        updateValue('canvasWidth', 'canvasWidthValue');
-        updateValue('canvasHeight', 'canvasHeightValue');
+        updateValue('tilesAcross', 'tilesAcrossValue');
+        updateValue('tilesDown', 'tilesDownValue');
         updateValue('tileSize', 'tileSizeValue');
         updateValue('groutWidth', 'groutWidthValue');
         
@@ -43,13 +43,13 @@ class MosaicGenerator {
         const sliders = [
             'complexity', 'ringSpacing', 'ringWidth', 'stretchX', 'stretchY', 
             'sineAmplitude', 'sineWaveLength', 'tileShiftAmplitude', 'tileShiftFrequency',
-            'canvasWidth', 'canvasHeight', 'tileSize', 'groutWidth'
+            'tilesAcross', 'tilesDown', 'tileSize', 'groutWidth'
         ];
         
         sliders.forEach(sliderId => {
             const slider = document.getElementById(sliderId);
             if (slider) {
-                if (sliderId === 'canvasWidth' || sliderId === 'canvasHeight' || sliderId === 'tileSize') {
+                if (sliderId === 'tilesAcross' || sliderId === 'tilesDown' || sliderId === 'tileSize') {
                     // Canvas-resizing sliders only update on release
                     slider.addEventListener('change', () => {
                         this.updateCanvasSize();
@@ -100,13 +100,13 @@ class MosaicGenerator {
     }
 
     updateCanvasSize() {
-        const width = parseInt(document.getElementById('canvasWidth').value);
-        const height = parseInt(document.getElementById('canvasHeight').value);
+        const tilesAcross = parseInt(document.getElementById('tilesAcross').value);
+        const tilesDown = parseInt(document.getElementById('tilesDown').value);
         const tileSize = parseInt(document.getElementById('tileSize').value);
         
-        // Round canvas dimensions to be multiples of tile size
-        const adjustedWidth = Math.floor(width / tileSize) * tileSize;
-        const adjustedHeight = Math.floor(height / tileSize) * tileSize;
+        // Canvas dimensions are already multiples of tile size
+        const adjustedWidth = tilesAcross * tileSize;
+        const adjustedHeight = tilesDown * tileSize;
         
         this.canvas.width = adjustedWidth;
         this.canvas.height = adjustedHeight;
@@ -406,22 +406,18 @@ class MosaicGenerator {
     }
 
     generate() {
-        // Force canvas dimensions to be exact multiples of tile size
+        // Calculate canvas dimensions from tile count
+        const tilesAcross = parseInt(document.getElementById('tilesAcross').value);
+        const tilesDown = parseInt(document.getElementById('tilesDown').value);
         const tileSize = parseInt(document.getElementById('tileSize').value);
-        const requestedWidth = parseInt(document.getElementById('canvasWidth').value);
-        const requestedHeight = parseInt(document.getElementById('canvasHeight').value);
         
-        const adjustedWidth = Math.floor(requestedWidth / tileSize) * tileSize;
-        const adjustedHeight = Math.floor(requestedHeight / tileSize) * tileSize;
+        const adjustedWidth = tilesAcross * tileSize;
+        const adjustedHeight = tilesDown * tileSize;
         
         this.canvas.width = adjustedWidth;
         this.canvas.height = adjustedHeight;
         
-        // Update both the slider values and display values to match actual dimensions
-        document.getElementById('canvasWidth').value = adjustedWidth;
-        document.getElementById('canvasHeight').value = adjustedHeight;
-        document.getElementById('canvasWidthValue').textContent = adjustedWidth;
-        document.getElementById('canvasHeightValue').textContent = adjustedHeight;
+        // No need to update tile controls - they remain the same
         
         this.generateBZPattern();
         this.drawBZPattern();
@@ -681,9 +677,37 @@ class MosaicGenerator {
     }
 
     export() {
+        // Create high-resolution version for export (4x scale)
+        const scale = 4;
+        const exportCanvas = document.createElement('canvas');
+        exportCanvas.width = this.canvas.width * scale;
+        exportCanvas.height = this.canvas.height * scale;
+        const exportCtx = exportCanvas.getContext('2d');
+        
+        // Disable image smoothing for crisp pixel art
+        exportCtx.imageSmoothingEnabled = false;
+        
+        // Scale the context to draw at higher resolution
+        exportCtx.scale(scale, scale);
+        
+        // Redraw the mosaic at high resolution
+        const originalCtx = this.ctx;
+        this.ctx = exportCtx;
+        
+        // Clear and fill background
+        this.ctx.fillStyle = '#FFFFFF';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // Regenerate the mosaic pattern at high resolution
+        this.applyMosaicEffect();
+        
+        // Restore original context
+        this.ctx = originalCtx;
+        
+        // Create download link with high-quality PNG
         const link = document.createElement('a');
-        link.download = 'mosaic.png';
-        link.href = this.canvas.toDataURL();
+        link.download = 'mosaic-hq.png';
+        link.href = exportCanvas.toDataURL('image/png');
         link.click();
     }
 }
