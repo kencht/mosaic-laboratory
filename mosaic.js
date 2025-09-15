@@ -17,7 +17,11 @@ class MosaicGenerator {
             const slider = document.getElementById(id);
             const valueSpan = document.getElementById(valueId);
             slider.addEventListener('input', () => {
-                valueSpan.textContent = slider.value;
+                if (id === 'groutWidth') {
+                    valueSpan.textContent = parseFloat(slider.value).toFixed(1);
+                } else {
+                    valueSpan.textContent = slider.value;
+                }
             });
         };
 
@@ -33,12 +37,13 @@ class MosaicGenerator {
         updateValue('canvasWidth', 'canvasWidthValue');
         updateValue('canvasHeight', 'canvasHeightValue');
         updateValue('tileSize', 'tileSizeValue');
+        updateValue('groutWidth', 'groutWidthValue');
         
         // Add auto-update listeners for all sliders 
         const sliders = [
             'complexity', 'ringSpacing', 'ringWidth', 'stretchX', 'stretchY', 
             'sineAmplitude', 'sineWaveLength', 'tileShiftAmplitude', 'tileShiftFrequency',
-            'canvasWidth', 'canvasHeight', 'tileSize'
+            'canvasWidth', 'canvasHeight', 'tileSize', 'groutWidth'
         ];
         
         sliders.forEach(sliderId => {
@@ -80,6 +85,9 @@ class MosaicGenerator {
             this.generateWithAnimation();
         });
 
+        document.getElementById('groutColor').addEventListener('change', () => {
+            this.generateWithAnimation();
+        });
 
         document.getElementById('randomiseBtn').addEventListener('click', () => {
             this.randomiseAll();
@@ -234,6 +242,32 @@ class MosaicGenerator {
         return colors;
     }
 
+    getGroutStyle() {
+        const groutColor = document.getElementById('groutColor').value;
+        const groutWidth = parseFloat(document.getElementById('groutWidth').value);
+        
+        if (groutColor === 'none' || groutWidth === 0) {
+            return null;
+        }
+        
+        let color;
+        switch (groutColor) {
+            case 'black':
+                color = '#000000';
+                break;
+            case 'white':
+                color = '#FFFFFF';
+                break;
+            case 'gray':
+                color = '#808080';
+                break;
+            default:
+                return null;
+        }
+        
+        return { color, width: groutWidth };
+    }
+
     getRandomColor() {
         const colors = this.getSelectedColors();
         return colors[Math.floor(Math.random() * colors.length)];
@@ -310,9 +344,13 @@ class MosaicGenerator {
                 this.ctx.fillStyle = closestColor;
                 this.ctx.fillRect(x, y, tileSize, tileSize);
                 
-                this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
-                this.ctx.lineWidth = 0.5;
-                this.ctx.strokeRect(x, y, tileSize, tileSize);
+                // Apply grout if enabled
+                const groutStyle = this.getGroutStyle();
+                if (groutStyle) {
+                    this.ctx.strokeStyle = groutStyle.color;
+                    this.ctx.lineWidth = groutStyle.width;
+                    this.ctx.strokeRect(x, y, tileSize, tileSize);
+                }
             }
         }
     }
@@ -508,9 +546,13 @@ class MosaicGenerator {
                 this.ctx.fillStyle = closestColor;
                 this.ctx.fillRect(x, y, tileSize, tileSize);
                 
-                this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
-                this.ctx.lineWidth = 0.5;
-                this.ctx.strokeRect(x, y, tileSize, tileSize);
+                // Apply grout if enabled
+                const groutStyle = this.getGroutStyle();
+                if (groutStyle) {
+                    this.ctx.strokeStyle = groutStyle.color;
+                    this.ctx.lineWidth = groutStyle.width;
+                    this.ctx.strokeRect(x, y, tileSize, tileSize);
+                }
 
                 currentTile++;
             }
