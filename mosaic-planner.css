@@ -1,0 +1,425 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'JetBrains Mono', monospace;
+    background: #f5f5dc;
+    min-height: 100vh;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(rgba(200, 180, 150, 0.3) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200, 180, 150, 0.3) 1px, transparent 1px);
+    background-size: 20px 20px;
+    z-index: -1;
+}
+
+.container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+h1 {
+    color: #FFDAB9;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 32px;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    text-shadow: 
+        2px 0 0 #FFB07A,
+        -2px 0 0 #FFB07A,
+        0 2px 0 #FFB07A,
+        0 -2px 0 #FFB07A,
+        2px 2px 0 #FFA07A,
+        -2px -2px 0 #FFA07A,
+        2px -2px 0 #FFA07A,
+        -2px 2px 0 #FFA07A;
+}
+
+.nav-button {
+    background: #4ecdc4;
+    color: #1a1a1a;
+    border: 2px solid #45b7d1;
+    padding: 10px 20px;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.nav-button:hover {
+    background: #45b7d1;
+    border-color: #4ecdc4;
+}
+
+.error-message {
+    background: #ff6b6b;
+    color: white;
+    padding: 15px;
+    border: 2px solid #e55555;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.left-panel, .right-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.control-section, .analysis-section, .layout-section, .statistics-section,
+.visualization-section, .pieces-section {
+    background: #d4c8a8;
+    border: 2px solid #a0937d;
+    padding: 20px;
+}
+
+.control-section h3, .analysis-section h3, .layout-section h3, 
+.statistics-section h3, .visualization-section h3, .pieces-section h3 {
+    margin: 0 0 15px 0;
+    color: #CC6040;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-family: 'Press Start 2P', monospace;
+    border-bottom: 2px solid #666;
+    padding-bottom: 5px;
+}
+
+.control-group {
+    margin-bottom: 15px;
+}
+
+.control-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    font-size: 12px;
+    color: #5c5043;
+    text-transform: uppercase;
+}
+
+select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 2px solid #a0937d;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    background: #f5f5dc;
+    color: #5c5043;
+    cursor: pointer;
+}
+
+select:focus {
+    outline: none;
+    border-color: #4ecdc4;
+}
+
+.primary-button, .secondary-button {
+    background: #4ecdc4;
+    color: #1a1a1a;
+    border: 2px solid #45b7d1;
+    padding: 12px 20px;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.primary-button:hover, .secondary-button:hover {
+    background: #45b7d1;
+    border-color: #4ecdc4;
+}
+
+.secondary-button {
+    background: #ffd93d;
+    border-color: #e6c236;
+    color: #1a1a1a;
+}
+
+.secondary-button:hover {
+    background: #e6c236;
+    border-color: #ffd93d;
+}
+
+.results-panel {
+    background: #f5f5dc;
+    border: 1px solid #a0937d;
+    padding: 15px;
+    margin-top: 10px;
+}
+
+.analysis-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    border-bottom: 1px solid #ccc;
+}
+
+.stat-label {
+    font-weight: 600;
+    color: #5c5043;
+}
+
+.stat-value {
+    font-weight: 700;
+    color: #CC6040;
+}
+
+.color-breakdown {
+    margin-top: 15px;
+}
+
+.color-breakdown h4 {
+    margin: 0 0 10px 0;
+    color: #5c5043;
+    font-size: 12px;
+}
+
+.color-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.color-swatch {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #666;
+    margin-right: 10px;
+}
+
+.layout-summary {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    background: #e8ddc7;
+    border: 1px solid #a0937d;
+}
+
+.summary-label {
+    font-weight: 600;
+    color: #5c5043;
+}
+
+.summary-value {
+    font-weight: 700;
+    color: #CC6040;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 5px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    border-bottom: 1px solid #ccc;
+}
+
+.stat-row.highlight {
+    background: #e8ddc7;
+    font-weight: 700;
+    border: 1px solid #a0937d;
+}
+
+.mosaic-display, .pieces-display {
+    text-align: center;
+    min-height: 200px;
+    background: #f5f5dc;
+    border: 1px solid #a0937d;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+canvas {
+    border: 2px solid #a0937d;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    max-width: 100%;
+    height: auto;
+}
+
+.bottom-panel {
+    background: #d4c8a8;
+    border: 2px solid #a0937d;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.bottom-panel h3 {
+    margin: 0 0 20px 0;
+    color: #CC6040;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-family: 'Press Start 2P', monospace;
+    border-bottom: 2px solid #666;
+    padding-bottom: 8px;
+}
+
+.sheet-layouts {
+    margin-top: 20px;
+}
+
+.sheets-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+    align-items: start;
+}
+
+.sheet-layout {
+    background: #f5f5dc;
+    border: 1px solid #a0937d;
+    padding: 15px;
+    text-align: center;
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.sheet-layout h4 {
+    margin: 0 0 10px 0;
+    color: #5c5043;
+    font-size: 14px;
+    font-family: 'Press Start 2P', monospace;
+}
+
+.sheet-layout p {
+    margin: 0 0 15px 0;
+    font-size: 11px;
+    color: #666;
+}
+
+.instructions-panel {
+    background: #d4c8a8;
+    border: 2px solid #a0937d;
+    padding: 20px;
+}
+
+.instructions-panel h3 {
+    margin: 0 0 15px 0;
+    color: #CC6040;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-family: 'Press Start 2P', monospace;
+    border-bottom: 2px solid #666;
+    padding-bottom: 5px;
+}
+
+.instructions-panel ol, .instructions-panel ul {
+    padding-left: 20px;
+    line-height: 1.6;
+}
+
+.instructions-panel li {
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: #5c5043;
+}
+
+.tips {
+    margin-top: 20px;
+    background: #f5f5dc;
+    border: 1px solid #a0937d;
+    padding: 15px;
+}
+
+.tips h4 {
+    margin: 0 0 10px 0;
+    color: #CC6040;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+    
+    h1 {
+        font-size: 24px;
+        letter-spacing: 2px;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    
+    header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    h1 {
+        font-size: 18px;
+        letter-spacing: 1px;
+    }
+    
+    .analysis-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .sheet-layouts {
+        grid-template-columns: 1fr;
+    }
+    
+    .nav-button, .primary-button, .secondary-button {
+        padding: 8px 16px;
+        font-size: 10px;
+    }
+}

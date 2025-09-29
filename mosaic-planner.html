@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mosaic Tile Planner</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="mosaic-planner.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Mosaic Tile Planner</h1>
+            <button id="backToMosaicBtn" class="nav-button">← Back to Mosaic</button>
+        </header>
+
+        <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+        <div class="main-content">
+            <!-- Left Panel: Controls and Analysis -->
+            <div class="left-panel">
+                <div class="control-section">
+                    <h3>Sheet Configuration</h3>
+                    <div class="control-group">
+                        <label for="sheetSizeSelect">Tile Sheet Size:</label>
+                        <select id="sheetSizeSelect">
+                            <option value="0">30x30 Standard</option>
+                            <option value="1">20x20 Small</option>
+                            <option value="2">40x20 Rectangle</option>
+                            <option value="3">25x25 Medium</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <button id="generatePlanBtn" class="primary-button">Generate Plan</button>
+                        <button id="exportPlanBtn" class="secondary-button">Export Plan</button>
+                    </div>
+                </div>
+
+                <div class="analysis-section">
+                    <div id="analysisResults" class="results-panel">
+                        <h3>Loading Analysis...</h3>
+                    </div>
+                </div>
+
+                <div class="layout-section">
+                    <div id="layoutResults" class="results-panel">
+                        <h3>Layout Optimization</h3>
+                        <p>Select a sheet size and generate a plan to see layout optimization results.</p>
+                    </div>
+                </div>
+
+                <div class="statistics-section">
+                    <div id="statistics" class="results-panel">
+                        <h3>Statistics</h3>
+                        <p>Generate a plan to see detailed statistics.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Visualizations -->
+            <div class="right-panel">
+                <div class="visualization-section">
+                    <h3>Original Mosaic</h3>
+                    <div id="originalMosaic" class="mosaic-display">
+                        <canvas id="originalCanvas"></canvas>
+                    </div>
+                </div>
+
+                <div class="pieces-section">
+                    <h3>Identified Pieces</h3>
+                    <div id="piecesVisualization" class="pieces-display">
+                        <p>Analyzing mosaic pieces...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Panel: Sheet Layouts -->
+        <div class="bottom-panel">
+            <div id="sheetLayouts" class="sheet-layouts">
+                <h3>Sheet Cutting Layouts</h3>
+                <p>Generate a plan to see sheet cutting layouts.</p>
+            </div>
+        </div>
+
+        <!-- Instructions Panel -->
+        <div class="instructions-panel">
+            <h3>How to Use</h3>
+            <ol>
+                <li><strong>Select Sheet Size:</strong> Choose the size of tile sheets you'll be cutting from</li>
+                <li><strong>Generate Plan:</strong> Click to analyze your mosaic and create an optimized cutting plan</li>
+                <li><strong>Review Layouts:</strong> Check the sheet layouts below to see where each piece should be cut</li>
+                <li><strong>Export Plan:</strong> Download the cutting plan as a JSON file for reference</li>
+            </ol>
+            <div class="tips">
+                <h4>Tips:</h4>
+                <ul>
+                    <li>Larger pieces will be automatically cut into smaller sections that fit your sheet size</li>
+                    <li>Pieces are numbered to match their position in the final mosaic</li>
+                    <li>The efficiency percentage shows how much of your tile sheets will be used vs. wasted</li>
+                    <li>Try different sheet sizes to find the most efficient option</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="utils/geometry.js"></script>
+    <script src="utils/bin-packing.js"></script>
+    <script src="utils/shape-nesting.js"></script>
+    <script src="mosaic-planner.js"></script>
+</body>
+</html>

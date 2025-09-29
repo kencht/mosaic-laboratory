@@ -4,6 +4,7 @@ class MosaicGenerator {
         this.ctx = this.canvas.getContext('2d');
         this.germinationPoint = { x: 0, y: 0 };
         this.pattern = [];
+        this.tileColorGrid = null; // Store the actual tile colors for planning
         this.init();
     }
 
@@ -95,6 +96,10 @@ class MosaicGenerator {
 
         document.getElementById('exportBtn').addEventListener('click', () => {
             this.export();
+        });
+
+        document.getElementById('planBtn').addEventListener('click', () => {
+            this.openPlanner();
         });
 
         document.getElementById('loadHashBtn').addEventListener('click', () => {
@@ -377,6 +382,9 @@ class MosaicGenerator {
         const tilesX = Math.floor(this.canvas.width / tileSize);
         const tilesY = Math.floor(this.canvas.height / tileSize);
 
+        // Initialize the tile color grid to capture actual tile colors
+        this.tileColorGrid = Array(tilesY).fill().map(() => Array(tilesX).fill(null));
+
         for (let tileY = 0; tileY < tilesY; tileY++) {
             for (let tileX = 0; tileX < tilesX; tileX++) {
                 const x = tileX * tileSize;
@@ -391,6 +399,9 @@ class MosaicGenerator {
                 
                 const avgColor = this.getAverageColor(data, clampedSourceX, clampedSourceY, tileSize, this.canvas.width);
                 const closestColor = this.getClosestColor(avgColor, selectedColors);
+                
+                // Store the tile color in our grid
+                this.tileColorGrid[tileY][tileX] = closestColor;
                 
                 this.ctx.fillStyle = closestColor;
                 this.ctx.fillRect(x, y, tileSize, tileSize);
@@ -812,6 +823,41 @@ class MosaicGenerator {
         link.download = `mosaic-${hash.substring(0, 12)}.png`;
         link.href = exportCanvas.toDataURL('image/png');
         link.click();
+    }
+
+    openPlanner() {
+        console.log('Opening planner...');
+        
+        if (!this.tileColorGrid) {
+            alert('Please wait for the mosaic to finish generating, then try again.');
+            return;
+        }
+        
+        const tilesAcross = parseInt(document.getElementById('tilesAcross').value);
+        const tilesDown = parseInt(document.getElementById('tilesDown').value);
+        const tileSize = parseInt(document.getElementById('tileSize').value);
+        const colors = this.getSelectedColors();
+        
+        console.log('Using captured tile grid:', this.tileColorGrid.length, 'x', this.tileColorGrid[0]?.length);
+        console.log('Sample tiles:', this.tileColorGrid[0]?.slice(0, 5));
+        
+        const mosaicData = {
+            tileGrid: this.tileColorGrid,
+            width: tilesAcross,
+            height: tilesDown,
+            colors: colors,
+            tileSize: tileSize,
+            timestamp: Date.now()
+        };
+        
+        console.log('Storing mosaic data...');
+        localStorage.setItem('mosaicPlannerData', JSON.stringify(mosaicData));
+        
+        window.open('mosaic-planner.html', '_blank');
+    }
+    
+    rgbToHex(r, g, b) {
+        return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
     }
 }
 
