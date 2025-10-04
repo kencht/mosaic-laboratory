@@ -10,6 +10,7 @@ class MosaicGenerator {
 
     init() {
         this.setupEventListeners();
+        this.setupCanvasClickListener();
         this.randomiseAll();
     }
 
@@ -129,6 +130,61 @@ class MosaicGenerator {
             });
         });
 
+    }
+
+    setupCanvasClickListener() {
+        this.canvas.addEventListener('click', (e) => {
+            const rect = this.canvas.getBoundingClientRect();
+
+            // Calculate actual canvas coordinates accounting for CSS scaling
+            const scaleX = this.canvas.width / rect.width;
+            const scaleY = this.canvas.height / rect.height;
+
+            const canvasX = (e.clientX - rect.left) * scaleX;
+            const canvasY = (e.clientY - rect.top) * scaleY;
+
+            // Calculate which tile was clicked
+            const tileSize = parseInt(document.getElementById('tileSize').value);
+            const tileX = Math.floor(canvasX / tileSize);
+            const tileY = Math.floor(canvasY / tileSize);
+
+            // Check if click is within bounds
+            if (this.tileColorGrid &&
+                tileY >= 0 && tileY < this.tileColorGrid.length &&
+                tileX >= 0 && tileX < this.tileColorGrid[0].length) {
+
+                this.cycleTileColor(tileX, tileY);
+            }
+        });
+    }
+
+    cycleTileColor(tileX, tileY) {
+        const currentColor = this.tileColorGrid[tileY][tileX];
+        const colors = this.getSelectedColors();
+
+        // Find the next color in the palette
+        const currentIndex = colors.indexOf(currentColor);
+        const nextIndex = (currentIndex + 1) % colors.length;
+        const newColor = colors[nextIndex];
+
+        // Update the grid
+        this.tileColorGrid[tileY][tileX] = newColor;
+
+        // Redraw the tile
+        const tileSize = parseInt(document.getElementById('tileSize').value);
+        const x = tileX * tileSize;
+        const y = tileY * tileSize;
+
+        this.ctx.fillStyle = newColor;
+        this.ctx.fillRect(x, y, tileSize, tileSize);
+
+        // Apply grout if enabled
+        const groutStyle = this.getGroutStyle();
+        if (groutStyle) {
+            this.ctx.strokeStyle = groutStyle.color;
+            this.ctx.lineWidth = groutStyle.width;
+            this.ctx.strokeRect(x, y, tileSize, tileSize);
+        }
     }
 
     updateCanvasSize() {
